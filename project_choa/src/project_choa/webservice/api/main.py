@@ -5,10 +5,12 @@ from pydantic import BaseModel
 # create object app FastApi
 app = FastAPI()
 
+
 # function '/'
 @app.get('/')
 def root():
     return {'message': 'Hello FastAPI'}
+
 
 # function 'about'
 @app.get('/about')

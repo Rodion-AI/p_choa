@@ -8,6 +8,7 @@ class Core:
         self.temperature = temperature
         self.verbose = verbose
 
+
 # создаем class router
 class Router(Core):
     # определяем роль, версию и температуру модели для router
@@ -33,6 +34,7 @@ class Router(Core):
     temperature_for_router = 0
     verbose_for_router = 0
 
+
     # собираем все данные
     def __init__(self, note, summary, client):
         self.note = note
@@ -46,6 +48,7 @@ class Router(Core):
             temperature = self.temperature_for_router,
             verbose = self.verbose_for_router
         )
+
 
     # пишем функцию активации
     async def activate(self):

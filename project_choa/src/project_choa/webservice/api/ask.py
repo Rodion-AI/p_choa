@@ -1,5 +1,6 @@
 from core_and_router import Core
 
+
 class Ask(Core):
 
     system_for_ask = '''

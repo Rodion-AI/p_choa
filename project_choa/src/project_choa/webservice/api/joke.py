@@ -1,5 +1,6 @@
 from core_and_router import Core
 
+
 class Joke(Core):
     # определяем роль модели, версию и температуру
     system_for_joke = '''

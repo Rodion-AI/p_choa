@@ -27,6 +27,7 @@ async def note_to_sheet(lst, note, df):
     async with aiofiles.open('journal_of_operations.csv', mode='w') as f:
         await f.write(df.to_csv(index=False))
 
+
 # создаем class accounting
 class Accounting(Core):
     # прописываем роль модели для заполнения таблицы, версию и температуру
