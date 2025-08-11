@@ -1,3 +1,6 @@
+'''
+Telegram-bot for neuro-finance
+'''
 import asyncio
 import logging
 import sys
@@ -14,8 +17,7 @@ load_dotenv()
 # Bot token can be obtained via https://t.me/BotFather
 TOKEN = getenv("BOT_TOKEN")
 
-# All handlers should be attached to the Router (or Dispatcher)
-
+# All handlers should be attached to the Router (or Dispatcher) 
 dp = Dispatcher()
 
 @dp.message(CommandStart())
@@ -23,29 +25,38 @@ async def command_start_handler(message: Message) -> None:
     '''
     This handler receives messages with `/start` command
     '''
-
-    await message.answer(f'''Hello, {html.bold(message.from_user.full_name)}!
-                         Меня зовут 초아. Нажмите /help, чтобы узнать 
-                         больше о моих способностях.
-                         ''')
+    await message.answer(f'Hello, {html.bold(message.from_user.full_name)}! \nМеня зовут 초아. Нажмите /help, чтобы узнать больше о моих способностях.')
 
 
 @dp.message(Command('help'))
 async def cmd_help(message: Message) -> None:
-
-    await message.answer('welcome')
-
+    '''
+    This handler receives messages with `/help` command
+    '''
+    await message.answer('Список команд: \n/help - список команд;\n/about - обо мне и моих задачах;\n/journal - предоставление журнала операции.')
 
 @dp.message(Command('about'))
 async def cmd_help(message: Message) -> None:
-
-    await message.answer('about me')
-
+    '''
+    This handler receives messages with `/about` command
+    '''
+    await message.answer('Я нейро-финансист в торговой компании. В мои обязанности входит ведение журнала операции для ОДДС. А также написание аналитических записок по просьбам руководства')
 
 @dp.message(Command('journal'))
 async def cmd_help(message: Message) -> None:
+    '''
+    This handler receives messages with `/journal` command
+    '''
+    await message.answer('journal of operation.csv')
 
-    await message.answer('journal of operation')
+@dp.message()
+async def text(message: Message) -> None:
+    '''
+    This handler receives messages with text
+    '''
+    choa = ChoaAI()
+    await choa.neuro_finansist(message.text)
+
 
 async def main() -> None:
     # Initialize Bot instance with default bot properties which will be passed to all API calls

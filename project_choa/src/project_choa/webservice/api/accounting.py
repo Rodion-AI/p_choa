@@ -1,3 +1,6 @@
+'''
+agent Accounting
+'''
 import ast
 import aiofiles
 
@@ -24,7 +27,7 @@ async def note_to_sheet(lst, note, df):
         'category':category
     }
 
-    async with aiofiles.open('journal_of_operations.csv', mode='w') as f:
+    async with aiofiles.open('content/journal_of_operations.csv', mode='w') as f:
         await f.write(df.to_csv(index=False))
 
 

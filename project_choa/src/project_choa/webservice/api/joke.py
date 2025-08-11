@@ -1,3 +1,6 @@
+'''
+agent Joke
+'''
 from core_and_router import Core
 
 

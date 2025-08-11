@@ -1,3 +1,6 @@
+'''
+base class and agent Router
+'''
 # создаем базовый класс для остальных
 class Core:
 

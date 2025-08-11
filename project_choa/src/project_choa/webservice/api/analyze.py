@@ -1,4 +1,15 @@
+'''
+agent Analyze
+'''
+import aiofiles
 from core_and_router import Core
+
+# функция для полученния аналитики
+async def analyze_sheet():
+    # сохранение занчении в документ
+    async with aiofiles.open('content/analyze.csv', mode='r') as f:
+        content = await f.read()
+    return content
 
 
 class Analyze(Core):
@@ -24,8 +35,8 @@ class Analyze(Core):
     temperature_for_analyze = 0
     verbose_for_analyze = 0
 
-    def __init__(self, sheet, client):
-        self.sheet = sheet
+    def __init__(self, client):
+        self.sheet = None
         self.client = client
 
         super().__init__(
@@ -34,6 +45,9 @@ class Analyze(Core):
             temperature = self.temperature_for_analyze,
             verbose = self.verbose_for_analyze
         )
+
+    async def load_sheet(self):
+        self.sheet = await analyze_sheet()
 
     async def activate(self):
         user_for_analyze = f'''
