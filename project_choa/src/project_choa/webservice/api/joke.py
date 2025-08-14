@@ -1,7 +1,7 @@
 '''
 agent Joke
 '''
-from core_and_router import Core
+from api.core_and_router import Core
 
 
 class Joke(Core):
@@ -38,7 +38,7 @@ class Joke(Core):
             {'role':'user', 'content':user_for_extract}
         ]
 
-        completion = self.client.chat.completions.create(
+        completion = await self.client.chat.completions.create(
             model = self.model,
             messages = messages,
             temperature = self.temperature

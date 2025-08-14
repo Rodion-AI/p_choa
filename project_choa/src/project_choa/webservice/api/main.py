@@ -1,7 +1,7 @@
 # import library
 from fastapi import FastAPI
 from pydantic import BaseModel
-from project_choa.webservice.api.choaAI import ChoaAI
+from api.ai import ChoaAI
 
 # create object app FastApi
 app = FastAPI()

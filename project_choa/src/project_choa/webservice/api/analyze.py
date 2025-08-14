@@ -2,7 +2,7 @@
 agent Analyze
 '''
 import aiofiles
-from core_and_router import Core
+from api.core_and_router import Core
 
 # функция для полученния аналитики
 async def analyze_sheet():
@@ -70,7 +70,7 @@ class Analyze(Core):
             {'role':'user', 'content':user_for_analyze}
         ]
 
-        completion = self.client.chat.completions.create(
+        completion = await self.client.chat.completions.create(
             model = self.model,
             messages = messages,
             temperature = self.temperature

@@ -2,11 +2,11 @@ import tracemalloc
 from dotenv import load_dotenv
 
 from openai import AsyncOpenAI
-from .core_and_router import Router
-from .accounting import Accounting
-from .ask import Ask
-from .analyze import Analyze
-from .joke import Joke
+from api.core_and_router import Router
+from api.accounting import Accounting
+from api.ask import Ask
+from api.analyze import Analyze
+from api.joke import Joke
 tracemalloc.start()
 
 
@@ -18,15 +18,17 @@ class ChoaAI():
     def __init__(self):
         self.client = AsyncOpenAI()
         self.total_summary = ''
-    
+
     # метод вызова нейро-финансиста
     async def neuro_finansist(self, note: str):
 
-        output = await Router.activate(note, self.total_summary, self.client)
+        router = Router(note, self.total_summary, self.client)
+        output = await router.activate()
         self.total_summary += note
 
         if 'accounting' in output:
-            out_answer, was_written = await Accounting.activate(note, self.total_summary, self.client)
+            accounting = Accounting(note, self.total_summary, self.client)
+            out_answer, was_written = await accounting.activate()
 
             if was_written == True:
                 self.total_summary = ''

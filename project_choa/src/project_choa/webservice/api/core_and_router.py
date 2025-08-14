@@ -71,7 +71,7 @@ class Router(Core):
             {'role':'user', 'content':user_for_router}
         ]
 
-        completion = self.client.chat.completions.create(
+        completion = await self.client.chat.completions.create(
             model = self.model,
             messages = messages,
             temperature = self.temperature

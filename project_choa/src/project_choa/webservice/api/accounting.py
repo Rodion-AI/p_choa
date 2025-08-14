@@ -2,33 +2,10 @@
 agent Accounting
 '''
 import ast
-import aiofiles
+import asyncio
+import pandas as pd
 
-from core_and_router import Core
-
-# функция для заполнения таблицы полученными значениями нейро-сотрудником
-async def note_to_sheet(lst, note, df):
-    # индексы для ввода данных
-    index_row = len(df)
-
-    date = lst[0]
-    summ = int(lst[1])
-    account = int(lst[2])
-    counterparty = str(lst[3])
-    category =  str(lst[4])
-
-    # записываем значения в таблицу
-    df.loc[index_row] = {
-        'note':note,
-        'date':date,
-        'sum':summ,
-        'account':account,
-        'counterparty':counterparty,
-        'category':category
-    }
-
-    async with aiofiles.open('content/journal_of_operations.csv', mode='w') as f:
-        await f.write(df.to_csv(index=False))
+from api.core_and_router import Core
 
 
 # создаем class accounting
@@ -172,20 +149,46 @@ class Accounting(Core):
     verbose_for_accounting = 0 
 
     # конструктор
-    def __init__(self, note, summary, df, client):
+    def __init__(self, note, summary, client):
         self.note = note
         self.summary = summary
-        self.df = df
         self.client = client
-        # 
+        # наследование аргументов из класса Core
         super().__init__(
             system = self.system_for_accounting, 
             model = self.model_for_accounting, 
             temperature = self.temperature_for_accounting, 
             verbose = self.verbose_for_accounting)
 
+    FILE_PATH = 'content/journal_of_operations.csv'
+    
+    async def load_df(self):
+        try:
+            return await asyncio.to_thread(pd.read_csv, self.FILE_PATH)
+        except:
+            return pd.DataFrame(columns=['note', 'date', 'sum', 'account', 
+                                         'counterparty', 'category'])
+
+    async def save_df(self, df):
+        await asyncio.to_thread(df.to_csv, self.FILE_PATH, index=False)
+
+    async def append_to_df(self, lst, note):
+        df = await self.load_df()
+        index_row = len(df)
+        df.loc[index_row] = {
+            'note':note,
+            'date':lst[0],
+            'sum':int(lst[1]),
+            'account':int(lst[2]),
+            'counterparty':str(lst[3]),
+            'category':str(lst[4])
+        }
+        await self.save_df(df)
+
     # функция активации
     async def activate(self):
+        df = await self.load_df()
+
         user_for_accounting = f'''
         Давай действовать последовательно:
 
@@ -229,7 +232,7 @@ class Accounting(Core):
             {'role':'assistant', 'content':assistant}
             ]
 
-        completion = self.client.chat.completions.create(
+        completion = await self.client.chat.completions.create(
             model = self.model,
             messages = messages,
             temperature = self.temperature
@@ -256,7 +259,7 @@ class Accounting(Core):
         if result.count('-') == 0:
             # добавляем в контекст в заметку
             self.summary += self.note
-            await note_to_sheet(result, self.summary, self.df)
+            await self.append_to_df(result, self.summary)
             # изменяем значение флага
             was_written_to_sheet = True
 
