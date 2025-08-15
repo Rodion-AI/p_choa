@@ -1,7 +1,9 @@
 '''
 agent Analyze
 '''
-import aiofiles
+import asyncio
+import pandas as pd
+
 from api.core_and_router import Core
 
 # функция для полученния аналитики
@@ -36,7 +38,6 @@ class Analyze(Core):
     verbose_for_analyze = 0
 
     def __init__(self, client):
-        self.sheet = None
         self.client = client
 
         super().__init__(
@@ -46,10 +47,17 @@ class Analyze(Core):
             verbose = self.verbose_for_analyze
         )
 
+    FILE_PATH = 'api/content/analyze.csv'
+
     async def load_sheet(self):
-        self.sheet = await analyze_sheet()
+        try:
+            return await asyncio.to_thread(pd.read_csv, self.FILE_PATH)
+        except:
+            return pd.DataFrame()
 
     async def activate(self):
+        sheet = await self.load_sheet()
+
         user_for_analyze = f'''
         Пожалуйста, давай действовать последовательно: \n
         Шаг 1: Определи вид предоставленного отчета. \n
@@ -61,7 +69,7 @@ class Analyze(Core):
         бы ты писал её для руководителя. Не описывай шаги, не 
         объясняй ход работы. \n\n
 
-        Предоставленный тебе отчет: {self.sheet}
+        Предоставленный тебе отчет: {sheet}
         Ответ:
         '''
 

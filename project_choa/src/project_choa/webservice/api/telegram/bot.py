@@ -56,7 +56,8 @@ async def text(message: Message) -> None:
     This handler receives messages with text
     '''
     choa = ChoaAI()
-    await choa.neuro_finansist(message.text)
+    response = await choa.neuro_finansist(message.text)
+    await message.answer(response)
 
 
 async def main() -> None:

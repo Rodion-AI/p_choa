@@ -34,12 +34,14 @@ class ChoaAI():
                 self.total_summary = ''
                 return 'Спасибо, внесла операцию в журнал'
             else:
-                questions = await Ask.activate(out_answer, self.client)
+                ask = Ask(out_answer, self.client)
+                questions = await ask.activate()
                 self.total_summary += questions
                 return questions
             
         elif 'analyze' in output:
-            out_answer = await Analyze.activate(self.client)
+            analyze = Analyze(self.client)
+            out_answer = await analyze.activate()
             return out_answer
         
         elif 'error' in output:
