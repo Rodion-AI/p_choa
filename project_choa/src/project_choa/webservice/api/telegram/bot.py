@@ -14,6 +14,8 @@ from aiogram.filters import CommandStart, Command
 from aiogram.types import Message
 from ..ai import ChoaAI
 
+choa = ChoaAI()
+
 load_dotenv()
 # Bot token can be obtained via https://t.me/BotFather
 TOKEN = getenv("BOT_TOKEN")
@@ -55,8 +57,7 @@ async def text(message: Message) -> None:
     '''
     This handler receives messages with text
     '''
-    choa = ChoaAI()
-    response = await choa.neuro_finansist(message.text)
+    response = await choa.neuro_finansist(message.from_user.id, message.text)
     await message.answer(response)
 
 

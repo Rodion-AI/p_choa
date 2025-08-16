@@ -17,26 +17,28 @@ class ChoaAI():
 
     def __init__(self):
         self.client = AsyncOpenAI()
-        self.total_summary = ''
+        self.user_context = {}
 
     # метод вызова нейро-финансиста
-    async def neuro_finansist(self, note: str):
+    async def neuro_finansist(self, user_id: int, note: str):
+        if user_id not in self.user_context:
+            self.user_context[user_id] = ''
 
-        router = Router(note, self.total_summary, self.client)
+        router = Router(note, self.user_context[user_id], self.client)
         output = await router.activate()
-        self.total_summary += note
+        self.user_context[user_id] += note
 
         if 'accounting' in output:
-            accounting = Accounting(note, self.total_summary, self.client)
+            accounting = Accounting(note, self.user_context[user_id], self.client)
             out_answer, was_written = await accounting.activate()
 
             if was_written == True:
-                self.total_summary = ''
+                self.user_context[user_id] = ''
                 return 'Спасибо, внесла операцию в журнал'
             else:
                 ask = Ask(out_answer, self.client)
                 questions = await ask.activate()
-                self.total_summary += questions
+                self.user_context[user_id] += questions
                 return questions
             
         elif 'analyze' in output:
@@ -45,7 +47,8 @@ class ChoaAI():
             return out_answer
         
         elif 'error' in output:
-            out_answer = await Joke.activate(note, self.client)
+            joke = Joke(note, self.client)
+            out_answer = await joke.activate()
             return out_answer
         else:
             return 'Error router'

@@ -12,6 +12,7 @@ choa = ChoaAI()
 # class for data
 class NeuroRequest(BaseModel):
     """Модель запроса для нейро-финансиста."""
+    user_id: int
     note: str
 
 # function '/'
@@ -27,5 +28,5 @@ def about():
 # function 'neuro'
 @app.post('/api/neuro/')
 def neuro(request: NeuroRequest):
-    return choa.neuro_finansist(request.note)
+    return choa.neuro_finansist(request.user_id, request.note)
 

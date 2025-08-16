@@ -6,13 +6,6 @@ import pandas as pd
 
 from api.core_and_router import Core
 
-# функция для полученния аналитики
-async def analyze_sheet():
-    # сохранение занчении в документ
-    async with aiofiles.open('content/analyze.csv', mode='r') as f:
-        content = await f.read()
-    return content
-
 
 class Analyze(Core):
     # прописываем роль, версию, температура модели
