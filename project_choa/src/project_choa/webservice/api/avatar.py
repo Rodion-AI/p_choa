@@ -20,16 +20,17 @@ class Avatar:
         }
 
     async def create_video(self, text: str) -> BytesIO:
-        '''Генерируем видео по тексту и возвращаем BytesIO для Telegram'''
+        '''
+        Генерируем видео по тексту и возвращаем BytesIO для Telegram
+        '''
         # шаг 1: generate
         async with httpx.AsyncClient() as client:
             payload = {
                 'video_inputs': [
                     {
                         'character': {
-                            'type': 'avatar', 
-                             'avatar_id': 'dd300185b5e7441585ef8c23b7fa5f3d', 
-                             'avatar_style': 'normal'
+                            'type': 'talking_photo', 
+                            'talking_photo_id': 'a6f8435e374a46fb99904b0a7a0e0a46'
                              },
                         'voice': {
                             'type': 'text', 
@@ -46,8 +47,18 @@ class Avatar:
                     }
             }
             resp = await client.post(self.url_generate, headers=self.headers, json=payload)
-            data = resp.json()
+            # проверяем статус
+            if resp.status_code != 200:
+                raise Exception(f"HeyGen API error {resp.status_code}: {resp.text}")
+
+            try:
+                data = resp.json()
+            except Exception:
+                raise Exception(f"Invalid JSON response from HeyGen: {resp.text}")
+
             video_id = data.get('data', {}).get('video_id')
+            if not video_id:
+                raise Exception(f"Video ID not found in response: {data}")
 
         # шаг 2: опрашиваем статус
         async with httpx.AsyncClient() as client:

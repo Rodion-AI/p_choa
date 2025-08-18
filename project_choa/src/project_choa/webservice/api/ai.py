@@ -1,5 +1,6 @@
 import tracemalloc
 from dotenv import load_dotenv
+from os import getenv
 
 from openai import AsyncOpenAI
 from api.core_and_router import Router
@@ -7,7 +8,6 @@ from api.accounting import Accounting
 from api.ask import Ask
 from api.analyze import Analyze
 from api.joke import Joke
-from api.avatar import Avatar
 tracemalloc.start()
 
 
@@ -16,7 +16,8 @@ class ChoaAI():
 
     def __init__(self):
         load_dotenv()
-        self.client = AsyncOpenAI()
+        OPEN_AI_API_KEY = getenv('OPENAI_API_KEY')
+        self.client = AsyncOpenAI(api_key=OPEN_AI_API_KEY)
         self.user_context = {}
 
     # метод вызова нейро-финансиста

@@ -50,12 +50,28 @@ async def cmd_about(message: Message) -> None:
     await message.answer('Я нейро-финансист в торговой компании. В мои обязанности входит ведение журнала операции для ОДДС. А также написание аналитических записок по просьбам руководства')
 
 
-@dp.message(Command('journal'))
+@dp.message(Command('download_journal'))
 async def cmd_journal(message: Message) -> None:
     '''
-    This handler receives messages with `/journal` command
+    This handler receives messages with `/download_journal` command
     '''
-    await message.answer('journal of operation.csv')
+    file_path = 'content/journal.csv'
+
+    await message.bot.send_document(chat_id=message.chat.id,
+                                    document=open(file_path, 'rb'),
+                                    caption='Журнал операции')
+
+
+@dp.message(Command('download_CFS'))
+async def cmd_download_cfs(message: Message) -> None:
+    '''
+    This handler receives messages with `/download_CFS` command
+    '''
+    file_path = 'content/cfs.csv'
+
+    await message.bot.send_document(chat_id=message.chat.id,
+                                    document=open(file_path, 'rb'),
+                                    caption='Отчет о движении денежных средств')
 
 
 @dp.message()
