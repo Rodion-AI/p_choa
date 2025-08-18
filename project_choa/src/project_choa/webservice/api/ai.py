@@ -7,15 +7,15 @@ from api.accounting import Accounting
 from api.ask import Ask
 from api.analyze import Analyze
 from api.joke import Joke
+from api.avatar import Avatar
 tracemalloc.start()
 
 
 # создаем класс ChoaAI
 class ChoaAI():
 
-    load_dotenv()
-
     def __init__(self):
+        load_dotenv()
         self.client = AsyncOpenAI()
         self.user_context = {}
 
@@ -34,21 +34,29 @@ class ChoaAI():
 
             if was_written == True:
                 self.user_context[user_id] = ''
-                return 'Спасибо, внесла операцию в журнал'
+                return {'module': 'accounting',
+                        'text': 'Спасибо, внесла операцию в журнал'}
             else:
                 ask = Ask(out_answer, self.client)
                 questions = await ask.activate()
                 self.user_context[user_id] += questions
-                return questions
+                return {'module': 'ask',
+                        'text': questions}
             
         elif 'analyze' in output:
             analyze = Analyze(self.client)
             out_answer = await analyze.activate()
-            return out_answer
+            self.user_context[user_id] = ''
+
+            return {'module': 'analyze',
+                    'text': out_answer}
         
         elif 'error' in output:
             joke = Joke(note, self.client)
             out_answer = await joke.activate()
-            return out_answer
+            self.user_context[user_id] = ''
+            return {'module': 'error',
+                    'text': out_answer}
         else:
-            return 'Error router'
+            return {'module': 'error router',
+                    'text': 'Error router'}

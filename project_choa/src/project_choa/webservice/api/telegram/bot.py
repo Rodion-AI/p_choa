@@ -13,12 +13,15 @@ from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart, Command
 from aiogram.types import Message
 from ..ai import ChoaAI
-
-choa = ChoaAI()
+from ..avatar import Avatar
 
 load_dotenv()
+choa = ChoaAI()
+avatar = Avatar()
+
 # Bot token can be obtained via https://t.me/BotFather
 TOKEN = getenv("BOT_TOKEN")
+
 
 # All handlers should be attached to the Router (or Dispatcher) 
 dp = Dispatcher()
@@ -38,19 +41,22 @@ async def cmd_help(message: Message) -> None:
     '''
     await message.answer('Список команд: \n/help - список команд;\n/about - обо мне и моих задачах;\n/journal - предоставление журнала операции.')
 
+
 @dp.message(Command('about'))
-async def cmd_help(message: Message) -> None:
+async def cmd_about(message: Message) -> None:
     '''
     This handler receives messages with `/about` command
     '''
     await message.answer('Я нейро-финансист в торговой компании. В мои обязанности входит ведение журнала операции для ОДДС. А также написание аналитических записок по просьбам руководства')
 
+
 @dp.message(Command('journal'))
-async def cmd_help(message: Message) -> None:
+async def cmd_journal(message: Message) -> None:
     '''
     This handler receives messages with `/journal` command
     '''
     await message.answer('journal of operation.csv')
+
 
 @dp.message()
 async def text(message: Message) -> None:
@@ -58,7 +64,12 @@ async def text(message: Message) -> None:
     This handler receives messages with text
     '''
     response = await choa.neuro_finansist(message.from_user.id, message.text)
-    await message.answer(response)
+
+    if response['module'] == 'analyze':
+        video_file = await avatar.create_video(response['text'])
+        await message.bot.send_video(chat_id=message.chat.id, video=video_file)
+    else:
+        await message.answer(response['text'])
 
 
 async def main() -> None:
