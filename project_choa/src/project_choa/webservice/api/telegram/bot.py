@@ -11,7 +11,7 @@ from aiogram import Bot, Dispatcher, html
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart, Command
-from aiogram.types import Message
+from aiogram.types import Message, FSInputFile
 from ..ai import ChoaAI
 from ..avatar import Avatar
 
@@ -21,7 +21,6 @@ avatar = Avatar()
 
 # Bot token can be obtained via https://t.me/BotFather
 TOKEN = getenv("BOT_TOKEN")
-
 
 # All handlers should be attached to the Router (or Dispatcher) 
 dp = Dispatcher()
@@ -39,7 +38,7 @@ async def cmd_help(message: Message) -> None:
     '''
     This handler receives messages with `/help` command
     '''
-    await message.answer('Список команд: \n/help - список команд;\n/about - обо мне и моих задачах;\n/journal - предоставление журнала операции.')
+    await message.answer('Список команд: \n/help - список команд;\n/about - обо мне и моих задачах;\n/d_journal - скачать журнал операции;\n/d_CFS - скачать ОДДС')
 
 
 @dp.message(Command('about'))
@@ -50,27 +49,29 @@ async def cmd_about(message: Message) -> None:
     await message.answer('Я нейро-финансист в торговой компании. В мои обязанности входит ведение журнала операции для ОДДС. А также написание аналитических записок по просьбам руководства')
 
 
-@dp.message(Command('download_journal'))
-async def cmd_journal(message: Message) -> None:
+@dp.message(Command('d_journal'))
+async def cmd_download_journal(message: Message) -> None:
     '''
-    This handler receives messages with `/download_journal` command
+    This handler receives messages with `/d_journal` command
     '''
-    file_path = 'content/journal.csv'
+    file_path = 'api/content/journal.csv'
+    document = FSInputFile(file_path)
 
     await message.bot.send_document(chat_id=message.chat.id,
-                                    document=open(file_path, 'rb'),
+                                    document=document,
                                     caption='Журнал операции')
 
 
-@dp.message(Command('download_CFS'))
+@dp.message(Command('d_CFS'))
 async def cmd_download_cfs(message: Message) -> None:
     '''
-    This handler receives messages with `/download_CFS` command
+    This handler receives messages with `/d_CFS` command
     '''
-    file_path = 'content/cfs.csv'
+    file_path = 'api/content/cfs.csv'
+    document = FSInputFile(file_path)
 
     await message.bot.send_document(chat_id=message.chat.id,
-                                    document=open(file_path, 'rb'),
+                                    document=document,
                                     caption='Отчет о движении денежных средств')
 
 
@@ -83,6 +84,7 @@ async def text(message: Message) -> None:
 
     if response['module'] == 'analyze':
         video_file = await avatar.create_video(response['text'])
+        await message.answer('Идет подготовка ...')
         await message.bot.send_video(chat_id=message.chat.id, video=video_file)
     else:
         await message.answer(response['text'])

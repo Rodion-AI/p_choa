@@ -31,6 +31,11 @@ class Avatar:
                         'character': {
                             'type': 'talking_photo', 
                             'talking_photo_id': 'a6f8435e374a46fb99904b0a7a0e0a46'
+                            'scale': 1.0,
+                            'talking_style': 'expressive',
+                            'expression': 'default',
+                            'super_resolution': True,
+                            "matting": True
                         },
                         'voice': {
                             'type': 'text',
@@ -63,7 +68,7 @@ class Avatar:
                 raise Exception(f"Video ID not found in response: {data}")
 
         # Шаг 2: опрашиваем статус
-        max_attempts = 30  # до 20 минут (120*10 секунд)
+        max_attempts = 30  
         sleep_seconds = 60
 
         async with httpx.AsyncClient() as client:
@@ -100,5 +105,3 @@ class Avatar:
             video_file.name = f'video_{video_id}.mp4'
 
         return video_file
-
-
