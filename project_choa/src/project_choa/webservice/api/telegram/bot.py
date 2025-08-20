@@ -11,7 +11,7 @@ from aiogram import Bot, Dispatcher, html
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart, Command
-from aiogram.types import Message, FSInputFile
+from aiogram.types import Message, FSInputFile, BufferedInputFile
 from ..ai import ChoaAI
 from ..avatar import Avatar
 
@@ -83,9 +83,12 @@ async def text(message: Message) -> None:
     response = await choa.neuro_finansist(message.from_user.id, message.text)
 
     if response['module'] == 'analyze':
-        video_file = await avatar.create_video(response['text'])
         await message.answer('Идет подготовка ...')
-        await message.bot.send_video(chat_id=message.chat.id, video=video_file)
+        video_file = await avatar.create_video(response['text'])
+        #
+        video_file.seek(0)
+        input_video = BufferedInputFile(video_file.read(), filename='video.mp4')
+        await message.bot.send_video(chat_id=message.chat.id, video=input_video)
     else:
         await message.answer(response['text'])
 
