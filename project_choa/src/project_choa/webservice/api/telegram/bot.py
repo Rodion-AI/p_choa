@@ -4,6 +4,7 @@ Telegram-bot for neuro-finance
 import asyncio
 import logging
 import sys
+import os
 from os import getenv
 from dotenv import load_dotenv
 
@@ -60,7 +61,7 @@ async def cmd_download_journal(message: Message) -> None:
     await message.bot.send_document(chat_id=message.chat.id,
                                     document=document,
                                     caption='Журнал операции')
-
+    os.remove(file_path)
 
 @dp.message(Command('d_CFS'))
 async def cmd_download_cfs(message: Message) -> None:
@@ -73,7 +74,6 @@ async def cmd_download_cfs(message: Message) -> None:
     await message.bot.send_document(chat_id=message.chat.id,
                                     document=document,
                                     caption='Отчет о движении денежных средств')
-
 
 @dp.message()
 async def text(message: Message) -> None:
